@@ -216,8 +216,6 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
 .button { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: .72rem 1.17rem; border: 1px solid transparent; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: .94rem; }
 .primary { background: #fae4b9; color: #302042; }
 .primary:hover { background: #fff2d8; }
-.text-button { border: 0; padding: .6rem .1rem; background: none; color: inherit; font-weight: 600; text-underline-offset: .25rem; }
-.text-button:hover { text-decoration: underline; }
 .hero-art { position: relative; min-width: 0; background: radial-gradient(ellipse at 53% 52%, #4b5172, #1b223d 65%, #101729); }
 .hero-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 51%; }
 .hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #1b223d 0%, #1b223d75 16%, transparent 37%); }
@@ -233,8 +231,6 @@ progress { appearance: none; width: 100%; height: .43rem; border: 0; border-radi
 progress::-webkit-progress-bar { background: #513e66; }
 progress::-webkit-progress-value { background: var(--gold); }
 progress::-moz-progress-bar { background: var(--gold); }
-.preview-bar { display: flex; justify-content: space-between; align-items: center; gap: .65rem 1rem; flex-wrap: wrap; padding: .75rem 1rem; margin-bottom: 1rem; background: #2c2343; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); }
-.preview-bar button { text-decoration: underline; text-underline-offset: .19em; background: transparent; border: 0; color: var(--gold); font-weight: 700; padding: .4rem 0; }
 .doors { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .9rem; }
 .door {
   position: relative;
