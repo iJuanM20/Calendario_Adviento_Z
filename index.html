@@ -12,7 +12,7 @@
   <link rel="icon" href="assets/estrella.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
   <script src="sorpresas.js" defer></script>
-  <script src="calendario.js" defer></script>
+  <script src="calendario.js?v=adviento-2026" defer></script>
 </head>
 <body>
   <section class="arrival" id="arrival" aria-labelledby="arrival-title">
@@ -47,11 +47,11 @@
       </a>
       <nav aria-label="Navegación principal">
         <a href="#calendario">Calendario</a>
-        <button class="sound-button" id="sound" type="button" aria-pressed="true">
+        <button class="sound-button" id="sound" type="button" aria-pressed="false">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4 9h4l5-4v14l-5-4H4z"/><path class="sound-waves" d="M16 9a4 4 0 0 1 0 6m3-8a7 7 0 0 1 0 10"/><path class="sound-off" d="m16 10 5 5m0-5-5 5"/>
           </svg>
-          Sonido
+          <span id="sound-label">Activar música</span>
         </button>
         <button class="share-button" id="share" type="button" hidden>
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M7 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -69,7 +69,6 @@
         <p class="dedication">Mi reina, llegaron 24 sobres al castillo. Entre luces de Navidad y un poquito de magia, guardé una carta, un recuerdo o un plan para los dos.</p>
         <div class="hero-actions">
           <a class="button primary" href="#calendario">Ver calendario</a>
-          <button class="text-button" id="hero-preview" type="button" hidden>Vista previa</button>
         </div>
       </div>
       <div class="hero-art">
@@ -88,10 +87,6 @@
           <label for="progress" id="progress-label">0 de 24 abiertas</label>
           <progress id="progress" value="0" max="24">0 de 24</progress>
         </div>
-      </div>
-      <div class="preview-bar" id="preview-bar" hidden>
-        <p><strong>Vista previa.</strong> Puedes ver las sorpresas sin guardar aperturas.</p>
-        <button type="button" id="exit-preview">Volver al calendario</button>
       </div>
       <noscript><p>Activa JavaScript para abrir las puertas del calendario.</p></noscript>
       <div class="doors" id="doors" aria-label="Puertas del 1 al 24 de diciembre"></div>
@@ -116,9 +111,9 @@
       <form method="dialog" class="dialog-actions"><button class="button secondary">Volver al calendario</button></form>
     </div>
   </dialog>
-  <audio id="ambient-sound" src="assets/ambiente-navidad.wav" preload="auto" loop></audio>
-  <audio id="gift-sound" src="assets/confeti-magico.wav" preload="auto"></audio>
-  <audio id="finale-sound" src="assets/nochebuena-final.wav" preload="auto"></audio>
+  <audio id="ambient-sound" src="assets/tema-harry-potter.mp3" preload="metadata" loop></audio>
+  <audio id="gift-sound" src="assets/confeti-magico.wav" preload="none"></audio>
+  <audio id="finale-sound" src="assets/nochebuena-final.wav" preload="none"></audio>
   <p class="toast" role="status" id="toast" hidden></p>
 </body>
 </html>

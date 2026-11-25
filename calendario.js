@@ -37,49 +37,114 @@ const ambientSound = document.getElementById("ambient-sound");
 const giftSound = document.getElementById("gift-sound");
 const finaleSound = document.getElementById("finale-sound");
 const soundButton = document.getElementById("sound");
+const soundLabel = document.getElementById("sound-label");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const progress = document.getElementById("progress");
 const progressLabel = document.getElementById("progress-label");
 const availability = document.getElementById("availability");
-const previewBar = document.getElementById("preview-bar");
 const toast = document.getElementById("toast");
 const shareButton = document.getElementById("share");
 const opened = readOpenedDays();
-let preview = false;
 let dateShown;
 let dialogDay;
 let toastTimer;
 let celebrationTimer;
 let soundEnabled = true;
+let audioContext;
+let activeEffect;
+let effectRequest = 0;
+const effectBuffers = new Map();
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
 
 try {
   soundEnabled = localStorage.getItem(SOUND_KEY) !== "off";
 } catch {}
 
-soundButton.setAttribute("aria-pressed", String(soundEnabled));
+function updateSoundButton() {
+  const playing = soundEnabled && !ambientSound.paused;
+  soundButton.setAttribute("aria-pressed", String(playing));
+  soundLabel.textContent = playing ? "Silenciar" : "Activar música";
+}
+
+for (const event of ["playing", "pause", "error"]) {
+  ambientSound.addEventListener(event, updateSoundButton);
+}
+
 soundButton.addEventListener("click", () => {
-  soundEnabled = !soundEnabled;
-  soundButton.setAttribute("aria-pressed", String(soundEnabled));
+  soundEnabled = ambientSound.paused || !soundEnabled;
   if (soundEnabled) playAmbience();
   else {
     ambientSound.pause();
-    giftSound.pause();
-    finaleSound.pause();
+    stopGiftSound();
   }
+  updateSoundButton();
   try {
     localStorage.setItem(SOUND_KEY, soundEnabled ? "on" : "off");
   } catch {}
 });
 
 function playAmbience() {
-  if (soundEnabled && ambientSound.paused) ambientSound.play().catch(() => {});
+  if (!soundEnabled || !ambientSound.paused) return;
+  // Safari must receive the play request directly from the tap.
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = "playback";
+  } catch {}
+  if (ambientSound.error) ambientSound.load();
+  ambientSound.play().catch(updateSoundButton);
 }
 
-function playGiftSound(isFinale = false) {
+function stopGiftSound() {
+  effectRequest++;
+  if (activeEffect) {
+    activeEffect.stop();
+    activeEffect = undefined;
+  }
+  giftSound.pause();
+  finaleSound.pause();
+}
+
+async function playGiftSound(isFinale = false) {
   if (!soundEnabled) return;
+  stopGiftSound();
   const sound = isFinale ? finaleSound : giftSound;
-  sound.currentTime = 0;
-  sound.play().catch(() => {});
+  if (!AudioContextClass || location.protocol === "file:") {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+    return;
+  }
+  const request = effectRequest;
+  try {
+    // Mix effects separately so Safari keeps the background audio element playing.
+    audioContext ??= new AudioContextClass();
+    const resumed = audioContext.state === "running" ? Promise.resolve() : audioContext.resume();
+    if (!effectBuffers.has(sound)) {
+      const buffer = fetch(sound.src)
+        .then(response => {
+          if (!response.ok) throw new Error("No se pudo cargar el efecto de audio");
+          return response.arrayBuffer();
+        })
+        .then(bytes => audioContext.decodeAudioData(bytes))
+        .catch(error => {
+          effectBuffers.delete(sound);
+          throw error;
+        });
+      effectBuffers.set(sound, buffer);
+    }
+    const [, buffer] = await Promise.all([resumed, effectBuffers.get(sound)]);
+    if (request !== effectRequest) return;
+
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.onended = () => {
+      source.disconnect();
+      if (activeEffect === source) activeEffect = undefined;
+    };
+    source.start();
+    activeEffect = source;
+  } catch {
+    // A failed effect must not interrupt the background music.
+  }
 }
 
 const arrival = document.getElementById("arrival");
@@ -172,12 +237,13 @@ function render() {
   let openedCount = 0;
   SORPRESAS.forEach((gift, index) => {
     const day = index + 1;
-    const today = dateForDay(day) === dateShown;
-    const isOpened = dateForDay(day) <= dateShown && opened.has(day);
+    const openingDate = dateForDay(day);
+    const today = openingDate === dateShown;
+    const available = openingDate <= dateShown;
+    const isOpened = available && opened.has(day);
     if (isOpened) openedCount++;
-    const available = preview || dateForDay(day) <= dateShown;
     const state = isOpened ? "open" : available ? "ready" : "closed";
-    const label = preview ? "Ver sorpresa" : isOpened ? "Abierta" : today ? "Abrir hoy" : available ? "Abrir" : `Abre el ${day} dic.`;
+    const label = isOpened ? "Abierta" : today ? "Abrir hoy" : available ? "Abrir" : `Abre el ${day} dic.`;
     const ornament = day === TOTAL ? ORNAMENTS.regalo : ORNAMENTS[ORNAMENT_ORDER[index % ORNAMENT_ORDER.length]];
     const button = document.createElement("button");
     button.type = "button";
@@ -209,13 +275,13 @@ function render() {
 }
 
 function showGift(day) {
-  const available = preview || dateForDay(day) <= dateInColombia();
+  const available = dateForDay(day) <= dateInColombia();
   const isFinale = available && day === TOTAL;
   const gift = SORPRESAS[day - 1];
   const paragraphs = available
     ? gift.texto.split("\n\n")
     : [`${day === 1 ? "La primera puerta" : "Esta puerta"} se abre el ${day} de diciembre a medianoche.`];
-  if (available && !preview) {
+  if (available) {
     opened.add(day);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...opened]));
@@ -355,24 +421,6 @@ function announce(message) {
   toastTimer = setTimeout(() => { toast.hidden = true; }, 4300);
 }
 
-const previewButton = document.getElementById("hero-preview");
-const localPreview = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
-previewButton.hidden = !localPreview && new URLSearchParams(location.search).get("vista") !== "previa";
-previewButton.addEventListener("click", () => {
-  preview = true;
-  previewBar.hidden = false;
-  render();
-  calendar.scrollIntoView();
-  doors.querySelector("button").focus({ preventScroll: true });
-});
-
-document.getElementById("exit-preview").addEventListener("click", () => {
-  preview = false;
-  previewBar.hidden = true;
-  render();
-  doors.querySelector("button").focus({ preventScroll: true });
-});
-
 doors.addEventListener("click", event => {
   const door = event.target.closest(".door");
   if (door) showGift(Number(door.dataset.day));
@@ -382,8 +430,7 @@ dialog.addEventListener("close", () => {
   clearGiftCelebration();
   giftCandles.replaceChildren();
   dialog.classList.remove("is-finale");
-  giftSound.pause();
-  finaleSound.pause();
+  stopGiftSound();
   doors.querySelector(`[data-day="${dialogDay}"]`)?.focus({ preventScroll: true });
 });
 
