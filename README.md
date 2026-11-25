@@ -9,4 +9,4 @@
 - Usa **Vista previa** al abrir el proyecto local para leer todas las sorpresas antes de diciembre. En el sitio publicado, añade `?vista=previa` al enlace para ver el botón. Las aperturas en esta vista no modifican el progreso.
 - El progreso se guarda en el navegador que abre el calendario. La fecha controla la interfaz. El contenido se distribuye con los archivos del sitio estático.
 
-La portada está en `dist/assets/hogwarts-navidad.webp` y los estilos en `dist/estilos.css`. La música ambiental empieza al abrir la carta. El botón **Sonido** controla tanto la música como los efectos de las sorpresas. Los tres audios están en `dist/assets/`.
+La portada está en `dist/assets/hogwarts-navidad.webp` y los estilos en `dist/estilos.css`. La música ambiental original empieza al abrir la carta. El botón **Sonido** controla la música y los efectos de las sorpresas. **Tema de Harry Potter** abre el reproductor de YouTube con la versión en piano que acompaña este calendario.

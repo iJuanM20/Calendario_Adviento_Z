@@ -69,12 +69,22 @@
         <p class="dedication">Mi reina, llegaron 24 sobres al castillo. Entre luces de Navidad y un poquito de magia, guardé una carta, un recuerdo o un plan para los dos.</p>
         <div class="hero-actions">
           <a class="button primary" href="#calendario">Ver calendario</a>
+          <button class="text-button" id="open-theme" type="button" aria-expanded="false" aria-controls="music-panel">Tema de Harry Potter</button>
           <button class="text-button" id="hero-preview" type="button" hidden>Vista previa</button>
         </div>
       </div>
       <div class="hero-art">
         <img src="assets/hogwarts-navidad.webp" alt="Un castillo nevado con ventanas encendidas y un sobre sellado sobre la piedra" fetchpriority="high" width="960" height="960">
       </div>
+    </section>
+
+    <section class="music-panel" id="music-panel" aria-labelledby="music-title" hidden>
+      <div class="music-heading">
+        <h2 id="music-title" tabindex="-1">Hedwig’s Theme</h2>
+        <button class="text-button" id="close-theme" type="button">Cerrar reproductor</button>
+      </div>
+      <div class="theme-player" id="theme-player"></div>
+      <a href="https://www.youtube.com/watch?v=GO6wV5PLPr4" target="_blank" rel="noopener">Abrir la versión en piano en YouTube</a>
     </section>
 
     <section class="calendar" id="calendario" aria-labelledby="calendar-title">
