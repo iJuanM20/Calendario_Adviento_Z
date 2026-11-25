@@ -37,9 +37,6 @@ const ambientSound = document.getElementById("ambient-sound");
 const giftSound = document.getElementById("gift-sound");
 const finaleSound = document.getElementById("finale-sound");
 const soundButton = document.getElementById("sound");
-const themeButton = document.getElementById("open-theme");
-const musicPanel = document.getElementById("music-panel");
-const themePlayer = document.getElementById("theme-player");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const progress = document.getElementById("progress");
 const progressLabel = document.getElementById("progress-label");
@@ -68,7 +65,6 @@ soundButton.addEventListener("click", () => {
     ambientSound.pause();
     giftSound.pause();
     finaleSound.pause();
-    closeThemePlayer();
   }
   try {
     localStorage.setItem(SOUND_KEY, soundEnabled ? "on" : "off");
@@ -76,49 +72,8 @@ soundButton.addEventListener("click", () => {
 });
 
 function playAmbience() {
-  if (soundEnabled && musicPanel.hidden && ambientSound.paused) ambientSound.play().catch(() => {});
+  if (soundEnabled && ambientSound.paused) ambientSound.play().catch(() => {});
 }
-
-const themeVisibility = new IntersectionObserver(entries => {
-  if (entries.some(entry => entry.intersectionRatio < .5)) closeThemePlayer();
-}, { threshold: .5 });
-
-function closeThemePlayer() {
-  if (musicPanel.hidden) return;
-  themeVisibility.disconnect();
-  themePlayer.replaceChildren();
-  musicPanel.hidden = true;
-  themeButton.setAttribute("aria-expanded", "false");
-  playAmbience();
-}
-
-themeButton.addEventListener("click", () => {
-  if (!musicPanel.hidden) {
-    closeThemePlayer();
-    return;
-  }
-  const player = document.createElement("iframe");
-  player.src = "https://www.youtube.com/embed/GO6wV5PLPr4?playsinline=1";
-  player.title = "Hedwig’s Theme, versión en piano";
-  player.allow = "encrypted-media; picture-in-picture; fullscreen";
-  player.referrerPolicy = "strict-origin-when-cross-origin";
-  ambientSound.pause();
-  musicPanel.hidden = false;
-  themeButton.setAttribute("aria-expanded", "true");
-  themePlayer.replaceChildren(player);
-  musicPanel.scrollIntoView({ behavior: "instant", block: "center" });
-  document.getElementById("music-title").focus({ preventScroll: true });
-  themeVisibility.observe(player);
-});
-
-document.getElementById("close-theme").addEventListener("click", () => {
-  closeThemePlayer();
-  themeButton.focus();
-});
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) closeThemePlayer();
-});
 
 function playGiftSound(isFinale = false) {
   if (!soundEnabled) return;
@@ -254,7 +209,6 @@ function render() {
 }
 
 function showGift(day) {
-  closeThemePlayer();
   const available = preview || dateForDay(day) <= dateInColombia();
   const isFinale = available && day === TOTAL;
   const gift = SORPRESAS[day - 1];
