@@ -222,6 +222,20 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
 .hero-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 51%; }
 .hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #1b223d 0%, #1b223d75 16%, transparent 37%); }
 
+.music-panel {
+  width: min(100%, 38rem);
+  margin: 1.6rem auto 0;
+  padding: clamp(.65rem, 2.4vw, 1.05rem);
+  border: 1px solid #edc48861;
+  border-radius: 1rem;
+  background: #202440;
+}
+.music-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .35rem .8rem; margin-bottom: .55rem; }
+.music-heading h2 { font: 600 clamp(1.35rem, 4vw, 1.8rem) var(--serif); }
+.music-heading button, .music-panel > a { color: var(--gold); font-size: .875rem; }
+.theme-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; min-height: 200px; border: 0; border-radius: .5rem; background: #080914; }
+.music-panel > a { display: inline-block; margin-top: .7rem; text-underline-offset: .2em; }
+
 .calendar { padding-top: 3.65rem; scroll-margin-top: 1.4rem; }
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.35rem; margin-bottom: 1.7rem; }
 .calendar-date { color: var(--gold); }
