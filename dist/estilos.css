@@ -312,6 +312,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
   cursor: pointer;
   list-style: none;
   isolation: isolate;
+  transition: min-height .8s cubic-bezier(.22, .68, .25, 1);
 }
 .hunt-cover::-webkit-details-marker { display: none; }
 .hunt-cover:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
@@ -322,6 +323,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   perspective: 850px;
+  transition: opacity .7s ease;
 }
 .hunt-cover-paper::before, .hunt-cover-paper::after {
   content: "";
@@ -337,7 +339,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
 .hunt-cover-paper::after { border-radius: 0 .2rem .2rem 0; transform-origin: right; background-position: center, right center, center; }
 .hunt-cover:hover .hunt-cover-paper::before { transform: rotateY(-9deg); }
 .hunt-cover:hover .hunt-cover-paper::after { transform: rotateY(9deg); }
-.hunt-folio[open] .hunt-cover { min-height: auto; border-radius: .3rem .3rem 0 0; }
+.hunt-folio[open] .hunt-cover { min-height: clamp(7rem, 15vw, 9.5rem); border-radius: .3rem .3rem 0 0; }
 .hunt-folio[open] .hunt-cover-paper { opacity: .55; }
 .hunt-cover-caption {
   display: grid;
@@ -353,6 +355,10 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
 .hunt-cover-open, .hunt-cover-close { color: #f0d0a1; font-size: .9rem; font-weight: 700; }
 .hunt-cover-close, .hunt-folio[open] .hunt-cover-open { display: none; }
 .hunt-folio[open] .hunt-cover-close { display: inline; }
+.hunt-unfold { display: grid; grid-template-rows: 1fr; }
+.hunt-unfold-clip { min-height: 0; overflow: hidden; }
+.hunt-folio[open] .hunt-unfold { animation: unfold-map .9s cubic-bezier(.2, .56, .27, 1) both; }
+@keyframes unfold-map { from { grid-template-rows: 0fr; } }
 .hunt-sheet {
   padding: clamp(1.1rem, 4vw, 2.5rem);
   border: 1px solid var(--map-edge);
@@ -363,8 +369,6 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
     radial-gradient(ellipse at 43% 28%, #faeac8, var(--map-paper));
   box-shadow: inset 0 0 1.7rem #80583735;
 }
-.hunt-folio[open] .hunt-sheet { transform-origin: top; animation: unfold-map .65s ease both; }
-@keyframes unfold-map { from { opacity: .3; transform: perspective(750px) rotateX(-10deg) translateY(-.35rem); } }
 .hunt-plan {
   position: relative;
   margin: 0 auto .45rem;
@@ -374,8 +378,8 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
   background: radial-gradient(ellipse at center, #faeac6aa 40%, #9a5c3536);
 }
 .hunt-plan img { display: block; width: 100%; height: auto; }
-.hunt-folio[open] .hunt-plan img { animation: reveal-ink .9s ease-out both; }
-@keyframes reveal-ink { from { opacity: .1; } }
+.hunt-folio[open] .hunt-plan img { animation: reveal-ink .8s ease-out .26s both; }
+@keyframes reveal-ink { from { opacity: 0; } }
 .map-steps { position: absolute; inset: 0; color: #773f2c; }
 .map-steps span {
   position: absolute;
@@ -388,7 +392,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
 }
 .map-steps span:nth-child(even) { translate: -50% -17%; }
 .hunt-folio[open] .map-steps span {
-  --step-delay: calc(.8s + var(--step) * .23s);
+  --step-delay: calc(1.11s + var(--step) * .23s);
   animation: map-route 12s linear var(--step-delay) infinite both, map-heading 12s linear var(--step-delay) infinite both;
 }
 .map-steps span::before, .map-steps span::after { content: ""; position: absolute; width: 100%; background: currentColor; }
@@ -406,7 +410,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
   color: #633825;
   font: italic 600 clamp(.63rem, 2.2vw, 1.2rem)/1.1 var(--serif);
 }
-.hunt-folio[open] .map-name { animation: map-route 12s linear .52s infinite both; }
+.hunt-folio[open] .map-name { animation: map-route 12s linear .87s infinite both; }
 .hunt-folio[open] .hunt-plan[data-paused] :is(.map-steps span, .map-name) { animation-play-state: paused; }
 @keyframes map-route {
   0% { left: 10%; top: 51%; opacity: 0; }
@@ -441,7 +445,7 @@ body:has(.arrival:not([hidden])) { overflow: hidden; }
   text-underline-offset: .22em;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hunt-folio[open] .map-steps span, .hunt-folio[open] .map-name, .hunt-folio[open] .hunt-plan img { animation: none; }
+  .hunt-folio[open] :is(.hunt-unfold, .map-steps span, .map-name, .hunt-plan img) { animation: none; }
   .map-motion { display: none; }
   .map-name { translate: 0 0; }
   .hunt-plan { margin-bottom: 1rem; }
