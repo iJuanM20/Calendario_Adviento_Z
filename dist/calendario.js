@@ -162,7 +162,13 @@ function finishArrival() {
   arrival.hidden = true;
   arrivalOrnaments.replaceChildren();
   const directToCalendar = location.hash === "#calendario";
+  const directToMap = location.hash === "#mapa";
   requestAnimationFrame(() => {
+    if (directToMap) {
+      document.getElementById("mapa").scrollIntoView();
+      document.querySelector(".hunt-cover").focus({ preventScroll: true });
+      return;
+    }
     if (directToCalendar) calendar.scrollIntoView();
     document.getElementById(directToCalendar ? "calendar-title" : "portada").focus({ preventScroll: true });
   });
@@ -291,6 +297,7 @@ function showGift(day) {
     render();
   }
   dialogDay = day;
+  updateHuntDoor(day, available);
   dialog.classList.toggle("is-finale", isFinale);
   document.getElementById("gift-seal").textContent = isFinale ? "★" : available ? "✦" : "✧";
   document.getElementById("gift-date").textContent = available ? `${gift.tipo} · ${day} de diciembre` : `Día ${day}`;

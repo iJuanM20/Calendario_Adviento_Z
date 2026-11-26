@@ -10,9 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/estrella.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="estilos.css">
-  <script src="sorpresas.js" defer></script>
-  <script src="calendario.js?v=adviento-2026" defer></script>
+  <link rel="stylesheet" href="estilos.css?v=merodeador-2">
+  <script src="sorpresas.js?v=merodeador-1" defer></script>
+  <script src="busqueda.js?v=merodeador-2" defer></script>
+  <script src="calendario.js?v=merodeador-1" defer></script>
 </head>
 <body>
   <section class="arrival" id="arrival" aria-labelledby="arrival-title">
@@ -29,6 +30,7 @@
         </span>
         <span class="button primary arrival-label">Abrir mi carta</span>
       </button>
+      <p class="arrival-clue">El búho del correo volvió con cuatro sellos encantados. Ni él pudo abrirlos.</p>
     </div>
     <div class="arrival-ornaments" id="arrival-ornaments" aria-hidden="true"></div>
   </section>
@@ -73,13 +75,17 @@
       </div>
       <div class="hero-art">
         <img src="assets/hogwarts-navidad.webp" alt="Un castillo nevado con ventanas encendidas y un sobre sellado sobre la piedra" fetchpriority="high" width="960" height="960">
+        <button type="button" class="hunt-seal castle-seal" data-seal="luna" aria-label="Examinar la luna"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.5A9 9 0 0 1 8.5 3.5a9 9 0 1 0 12 12Z"/></svg></button>
       </div>
     </section>
 
     <section class="calendar" id="calendario" aria-labelledby="calendar-title">
       <div class="section-head">
         <div>
-          <p class="calendar-date">DICIEMBRE 2026</p>
+          <div class="calendar-stamp">
+            <p class="calendar-date">DICIEMBRE 2026</p>
+            <button type="button" class="hunt-seal" data-seal="pluma" aria-label="Examinar la pluma"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21 17 8m-9 9v-5c2-6 6-9 12-9 0 6-3 11-8 13Z"/></svg></button>
+          </div>
           <h2 id="calendar-title" tabindex="-1">Las 24 sorpresas</h2>
           <p id="availability">La primera puerta se abre el 1 de diciembre a medianoche.</p>
         </div>
@@ -91,10 +97,64 @@
       <noscript><p>Activa JavaScript para abrir las puertas del calendario.</p></noscript>
       <div class="doors" id="doors" aria-label="Puertas del 1 al 24 de diciembre"></div>
     </section>
+
+    <section class="hunt-panel" id="mapa" aria-label="Mapa del Merodeador">
+      <details class="hunt-folio">
+        <summary class="hunt-cover">
+          <span class="hunt-cover-paper" aria-hidden="true"></span>
+          <span class="hunt-cover-caption">
+            <span class="hunt-title">Mapa del Merodeador</span>
+            <span class="hunt-cover-open">Jurar solemnemente y revelar el mapa</span>
+            <span class="hunt-cover-close">Travesura realizada · Plegar el mapa</span>
+          </span>
+        </summary>
+        <div class="hunt-sheet">
+          <div class="hunt-plan" aria-hidden="true">
+            <img src="assets/plano-merodeador.webp" width="1500" height="540" alt="">
+            <div class="map-steps">
+              <span style="--x:17%;--y:55%;--angle:63deg;--step:0"></span>
+              <span style="--x:21%;--y:59%;--angle:75deg;--step:1"></span>
+              <span style="--x:25%;--y:55%;--angle:80deg;--step:2"></span>
+              <span style="--x:30%;--y:56%;--angle:73deg;--step:3"></span>
+              <span style="--x:35%;--y:51%;--angle:75deg;--step:4"></span>
+              <span style="--x:39%;--y:55%;--angle:87deg;--step:5"></span>
+              <span style="--x:43%;--y:51%;--angle:67deg;--step:6"></span>
+              <span style="--x:47%;--y:54%;--angle:68deg;--step:7"></span>
+            </div>
+            <span class="map-name">Zaret</span>
+          </div>
+          <button class="map-motion" id="map-motion" type="button">Pausar huellas</button>
+          <p class="hunt-intro">En Hogwarts quedaron cuatro sellos encantados. Encuéntralos y resuelve la prueba que guarda cada uno. Hasta Hermione habría traído papel y lápiz.</p>
+          <p class="hunt-status" id="hunt-status" role="status">0 de 4 sellos descifrados.</p>
+          <div class="hunt-puzzle" id="hunt-puzzle" hidden>
+            <p class="hunt-order">Para leer la carta, toca los objetos en el orden en que Harry los encuentra por primera vez en las películas.</p>
+            <div class="hunt-fragments" id="hunt-fragments" aria-label="Objetos para ordenar" role="group"></div>
+            <p class="hunt-phrase" id="hunt-phrase" aria-live="polite">El mensaje se escribe aquí.</p>
+            <button type="button" class="button primary" id="hunt-check" disabled>Descifrar el mensaje</button>
+            <button type="button" class="hunt-link hunt-reset" id="hunt-reset">Borrar mi intento</button>
+          </div>
+          <div class="hunt-reward" id="hunt-reward" tabindex="-1" hidden>
+            <blockquote></blockquote>
+            <p>Escoge un día y sigue el rastro de su sorpresa.</p>
+            <div class="hunt-traces" id="hunt-traces" role="group" aria-label="Pistas de los días 1 al 24"></div>
+            <p class="hunt-trace-clue" id="hunt-trace-clue" aria-live="polite"></p>
+          </div>
+          <details class="hunt-riddles">
+            <summary>Buscar ayuda en el pergamino</summary>
+            <ul>
+              <li>La luna se salió del cielo y se quedó al borde de una imagen.</li>
+              <li>La pluma anda cerca del mes que escribió en el calendario.</li>
+              <li>La llave se perdió camino al Expreso de Hogwarts. Busca el número del andén antes de la fracción.</li>
+              <li>Cuando llegues al final, fíjate en lo que separa la despedida del resto de la página.</li>
+            </ul>
+          </details>
+        </div>
+      </details>
+    </section>
   </main>
 
   <footer class="footer shell">
-    <span aria-hidden="true">✦</span>
+    <button type="button" class="hunt-seal farewell-seal" data-seal="estrella" aria-label="Examinar la estrella"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/></svg></button>
     <p>Para ti, con todo mi amor.</p>
   </footer>
   </div>
@@ -108,7 +168,31 @@
       <p class="gift-date" id="gift-date"></p>
       <h2 id="gift-title"></h2>
       <div id="gift-copy"></div>
+      <div class="clue-note gift-clue" id="gift-clue" hidden>
+        <span class="clue-star" aria-hidden="true">✦</span>
+        <div>
+          <p class="clue-label">Pista bajo el sello</p>
+          <p id="gift-clue-text"></p>
+        </div>
+      </div>
+      <button type="button" class="hunt-seal door-seal" data-seal="llave" aria-label="Examinar la llave" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="16.5" cy="7.5" r="4.5"/><path d="m13 11-9 9m3-3 2 2m1-5 2 2"/></svg></button>
       <form method="dialog" class="dialog-actions"><button class="button secondary">Volver al calendario</button></form>
+    </div>
+  </dialog>
+  <dialog id="hunt-dialog" aria-labelledby="trial-title">
+    <div class="dialog-content trial-content">
+      <form method="dialog"><button class="close-dialog" aria-label="Cerrar prueba" autofocus>×</button></form>
+      <p class="gift-date">Sello encantado</p>
+      <h2 id="trial-title"></h2>
+      <p id="trial-intro"></p>
+      <ul class="trial-clues" id="trial-clues"></ul>
+      <details class="trial-help" id="trial-help"><summary>Una pista más</summary><p id="trial-hint"></p></details>
+      <form class="trial-answer" id="trial-form">
+        <label for="trial-code">Tu respuesta</label>
+        <input id="trial-code" type="text" required maxlength="28" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="button secondary">Probar el sello</button>
+      </form>
+      <p class="trial-feedback" id="trial-feedback" role="status"></p>
     </div>
   </dialog>
   <audio id="ambient-sound" src="assets/tema-harry-potter.mp3?v=recorte-1" preload="metadata" loop></audio>
